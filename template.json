@@ -1,0 +1,70 @@
+{
+    "variables": {
+        "aws_accesss_key": "",
+        "aws_secret_key": "",
+        "aws_region": "",
+        "source_ami": "ami-00e7c824923988f3f",
+        "ami_users": "107279788489,210150958355",
+        "ssh_username": "ubuntu"
+    },
+    "builders": [{
+        "type": "amazon-ebs",
+        "access_key": "{{user `aws_accesss_key`}}",
+        "secret_key": "{{user `aws_secret_key`}}",
+        "region": "{{user `aws_region`}}",
+        "instance_type": "t2.micro",
+        "ami_users": "{{user `ami_users`}}",
+        "ssh_username": "{{user `ssh_username`}}",
+        "ami_name": "csye6225_a6_{{timestamp}}",
+        "associate_public_ip_address": true,
+        "ami_description": "Image for running node js application on ubuntu",
+        "source_ami": "ami-00e7c824923988f3f",
+        "launch_block_device_mappings": [
+            {
+                "device_name": "/dev/sda1",
+                "volume_size": 8,
+                "volume_type": "gp2",
+                "delete_on_termination": true
+            }
+        ]    
+    }
+    ],
+    "provisioners": [
+        {
+            "type": "shell",
+            "inline": [
+            	"sudo rm /var/lib/apt/lists/lock",
+            	"sudo rm /var/cache/apt/archives/lock",
+				"sudo rm /var/lib/dpkg/lock-frontend",
+				"sudo dpkg --configure -a",
+				"sudo apt install -f",
+                "curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -",
+                "sudo rm /var/lib/apt/lists/lock",
+                "sudo rm /var/cache/apt/archives/lock",
+                "sudo rm /var/lib/dpkg/lock-frontend",
+                "sudo dpkg --configure -a",
+                "sudo apt install -f",
+                "sudo apt-get -y install nodejs",
+				"node --version",
+                "which node",
+                "which npm",
+                "npm --version",
+                "sudo npm install pm2 -g",
+                "sudo apt-get -y install ruby",
+                "sudo apt-get -y install wget",
+                "cd /home/ubuntu",
+                "ls -al",
+                "wget https://aws-codedeploy-us-east-1.s3.us-east-1.amazonaws.com/latest/install",
+                "ls -al",
+                "chmod +x ./install",
+                "sudo ./install auto",
+                "sudo service codedeploy-agent start",
+                "sudo service codedeploy-agent status",
+                "wget https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb",
+                "sudo rm /var/lib/dpkg/lock",
+                "sudo apt install -f",
+                "sudo dpkg -i amazon-cloudwatch-agent.deb"
+            ]
+        }
+    ]
+}
